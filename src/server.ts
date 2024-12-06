@@ -1,4 +1,9 @@
-import express, { Application, RequestHandler } from "express";
+import express, {
+  Application,
+  Request,
+  RequestHandler,
+  Response,
+} from "express";
 import { Container } from "inversify";
 import cors from "cors";
 import helmet from "helmet";
@@ -35,7 +40,7 @@ class APIGateway {
     });
 
     this.initialize_middlewares();
-    this.setup_proxy_routes();
+    this.setup_dynamic_proxy_routes();
   }
 
   private initialize_middlewares() {
@@ -50,52 +55,9 @@ class APIGateway {
     this.app.use(express.urlencoded({ extended: true }));
   }
 
-  private setup_proxy_routes() {
-    this.app.use((req, res, next) => {
-      const [service_name, _] = BrokerService.extract_base_url(req.originalUrl);
-
-      next();
-    });
-
-    const configs = BrokerConfig.endpoints();
-
-    configs.map((config) => {
-      this.setup_dynamic_route(
-        config.proxy_method,
-        config.broker_path,
-        Authenticator.authenticate(config),
-        GiantGate.authorize(config.role_access_level),
-        config.request_engine(config)
-      );
-    });
-
-    // this.app.post(
-    //   "/user",
-    //   Authenticator.authenticate,
-    //   GiantGate.authorize(["admin", "user"]),
-    //   UserProxy.broke,
-    // );
-
-    // this.app.post(
-    //   "/wallet",
-    //   Authenticator.authenticate,
-    //   GiantGate.authorize(["admin"]),
-    //   WalletProxy.broke,
-    // );
-  }
-
-  private setup_dynamic_route(
-    method: ProxyMethods,
-    path: string,
-    authenticator: RequestHandler,
-    authorizer: RequestHandler,
-    request_engine: RequestHandler
-  ) {
-    if (typeof this.app[method] === "function") {
-      this.app[method](path, authenticator, authorizer, request_engine);
-    } else {
-      throw new Error(`Unsupported HTTP method: ${method}`);
-    }
+  private setup_dynamic_proxy_routes() {
+    this.app.use("/:service_name", BrokerService.service_mapping);
+    this.app.use(BrokerService.apply_middleware_policing);
   }
 
   public start(port: number): void {

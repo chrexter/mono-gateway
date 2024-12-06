@@ -4,7 +4,7 @@ import { WalletProxy } from "../proxies/wallet.proxy";
 import { ProxyMethods } from "../server";
 
 export interface BrokerConfigInterface {
-  name: string;
+  service_name: string;
   alias: string;
   broker_path: string;
   proxy_to: string;
@@ -13,6 +13,7 @@ export interface BrokerConfigInterface {
   role_access_level: Array<string>;
   require_authentication: boolean;
   require_pin: boolean;
+  proxy_path: string | undefined;
 }
 
 export class BrokerConfig {
@@ -21,26 +22,28 @@ export class BrokerConfig {
   public static endpoints(): Array<BrokerConfigInterface> {
     return [
       {
-        name: "google",
-        alias: "google-mind",
-        broker_path: "/find-google",
+        service_name: "users",
+        alias: "kabani",
+        broker_path: "/users",
         proxy_to: "http://www.example.org",
         proxy_method: ProxyMethods.GET,
         request_engine: UserProxy.match,
         role_access_level: ["*"],
         require_authentication: false,
         require_pin: false,
+        proxy_path: undefined,
       },
       {
-        name: "users",
+        service_name: "users",
         alias: "thelta",
         broker_path: "/users",
         proxy_to: "http://www.example.org",
         proxy_method: ProxyMethods.POST,
-        request_engine: WalletProxy.broke,
+        request_engine: WalletProxy.match,
         role_access_level: ["user", "admin"],
         require_authentication: true,
         require_pin: true,
+        proxy_path: undefined,
       },
     ];
   }
