@@ -1,13 +1,13 @@
 import axios, { AxiosResponse } from "axios";
-import { NextFunction, Request, RequestHandler, Response } from "express";
-import { BrokerConfig, BrokerConfigInterface } from "./brother.config";
+import { NextFunction, Request, Response } from "express";
+import { BrokerConfig } from "./brother.config";
 import { Authenticator } from "../black_box/authenticate";
 import { GiantGate } from "../black_box/giantgate";
 
 export class BrokerService {
   public static async broke(
     req: Request,
-    res: Response
+    res: Response,
   ): Promise<AxiosResponse> {
     const { proxy_config } = req;
     const { require_authentication } = proxy_config;
@@ -33,7 +33,7 @@ export class BrokerService {
   public static service_mapping(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     const service_name = req.params.service_name;
 
@@ -55,7 +55,7 @@ export class BrokerService {
   public static apply_middleware_policing(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     const { proxy_config } = req;
 
@@ -63,7 +63,7 @@ export class BrokerService {
       const middlewares = [
         Authenticator.authenticate(proxy_config),
         GiantGate.authorize(proxy_config.role_access_level),
-        proxy_config.request_engine(proxy_config),
+        proxy_config.request_engine,
       ];
 
       try {

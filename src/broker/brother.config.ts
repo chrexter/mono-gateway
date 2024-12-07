@@ -9,7 +9,7 @@ export interface BrokerConfigInterface {
   broker_path: string;
   proxy_to: string;
   proxy_method: ProxyMethods;
-  request_engine: (config: BrokerConfigInterface) => RequestHandler;
+  request_engine: RequestHandler;
   role_access_level: Array<string>;
   require_authentication: boolean;
   require_pin: boolean;

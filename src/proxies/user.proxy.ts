@@ -1,16 +1,13 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-import { BrokerConfigInterface } from "../broker/brother.config";
-import axios from "axios";
+import { BrokerService } from "../broker/broker_service";
 
 export class UserProxy {
   constructor() {}
 
-  public static match(config: BrokerConfigInterface): RequestHandler {
+  public static match(): RequestHandler {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
-        // const response = await axios.post(config.proxy_to, req.body, {
-        //   headers: { Authorization: req?.headers?.authorization },
-        // });
+        const response = await BrokerService.broke(req, res);
 
         const data = {
           user: {

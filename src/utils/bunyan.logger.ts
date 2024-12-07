@@ -8,24 +8,25 @@ const bunyan_middleware = (
   next: NextFunction,
   logger: Logger,
 ) => {
-  const startTime = Date.now();
+  const start_time = Date.now();
 
   logger.info(
     { method: req.method, url: req.originalUrl, headers: req.headers },
-    "Incoming request",
+    "Incoming Request",
   );
 
   // Capture response status and time taken
   res.on("finish", () => {
-    const responseTime = Date.now() - startTime;
+    const response_time = Date.now() - start_time;
+
     logger.info(
       {
         method: req.method,
         url: req.originalUrl,
         status: res.statusCode,
-        responseTime: `${responseTime}ms`,
+        responseTime: `${response_time}ms`,
       },
-      "Request completed",
+      "Request Completed",
     );
   });
 

@@ -1,6 +1,5 @@
-import axios from "axios";
 import { NextFunction, Request, Response } from "express";
-import { BrokerConfig, BrokerConfigInterface } from "../broker/brother.config";
+import { BrokerConfigInterface } from "../broker/brother.config";
 
 export class Authenticator {
   constructor() {}
